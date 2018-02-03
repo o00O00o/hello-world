@@ -1,7 +1,8 @@
-#include "layout.h" 
 #include <stddef.h>
 #include <string.h>
 #include <stdbool.h>
+
+#include "layout.h" 
 
 #define FOUND 1
 #define NOT_FOUND 0
@@ -14,12 +15,7 @@ Position sum(Position pos1, Position pos2) {
     return ret;     
 }
 
-bool not_zero(Position pos) {
-    //return true if pos is not (0,0)
-    return !(pos.x == 0 && pos.y == 0);
-}
-
-int get_position(Node* root, SearchType search, void* ptr, Position* ret) {
+int DFS(Node* root, SearchType search, void* ptr, Position* ret) {
     //easy to maintain if only one function that does the tree traversing 
     if (root == NULL) {
         return NOT_FOUND;
@@ -45,9 +41,10 @@ int get_position(Node* root, SearchType search, void* ptr, Position* ret) {
 
     Node* curr = root->childern_root;
     while(curr != NULL) {
-        int result = get_position(curr, search, ptr, ret);
+        int result = DFS(curr, search, ptr, ret);
         
         if (result == FOUND) {
+            //calculater the position as you return from the DFS
             *ret = sum(curr->pos, *ret);
             return FOUND;
         }
@@ -55,15 +52,21 @@ int get_position(Node* root, SearchType search, void* ptr, Position* ret) {
             curr = curr->sibling_next;
         }
     }
-    
-    //return (0,0) if not found 
-    //return (Position){.x = 0, .y = 0};
-    //*ret =sum(root->pos, *ret);
-
 
     return NOT_FOUND;
 }
 
+Position get_position(Node* root, SearchType search, void* ptr) {
+    Position ret;
+    ret.x = 0;
+    ret.y = 0;
+
+    if (DFS(root, search, ptr, &ret) == FOUND) {
+        ret = sum(root->pos, ret);
+    }
+
+    return ret;
+}
 
 //! Initialize node with the given values
 //! @param node the node to initialize
@@ -111,39 +114,20 @@ void layout_node_update_position(Layout* layout, Node* node, Position position) 
 //! @return the absolute position for the node with the given memory address
 struct Position layout_get_position_for_node(Layout* layout, Node* node) {
     SearchType search = NODE;
-    
-    Position ret;
-    ret.x = 0;
-    ret.y = 0;
-
-    get_position(layout->root, search, node, &ret);
-    ret = sum(layout->root->pos, ret);
+    Position ret = get_position(layout->root, search, node);
     return ret;
 }
 
 //! @return the absolute position for the node with the given name
 struct Position layout_get_position_for_name(Layout* layout, const char* name) {
     SearchType search = NAME;
-    
-    Position ret;
-    ret.x = 0;
-    ret.y = 0;
-
-    get_position(layout->root, search, name, &ret);
-    ret = sum(layout->root->pos, ret);
+    Position ret = get_position(layout->root, search, name);
     return ret;
 }
 //! @return the absolute position for the node with the given id
 struct Position layout_get_position_for_id(Layout* layout, int id) {
     SearchType search = ID;
-    
-    Position ret;
-    ret.x = 0;
-    ret.y = 0;
-
-    get_position(layout->root, search, &id, &ret);
-    ret = sum(layout->root->pos, ret);
-
+    Position ret = get_position(layout->root, search, &id);
     return ret;
 }
 

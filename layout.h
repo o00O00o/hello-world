@@ -31,8 +31,8 @@ typedef struct LayoutNode {
     const char* name;
     Position pos;
     struct LayoutNode* sibling_next;
-    struct LayoutNode* childern_next;
-    struct LayoutNode* childern_root;
+    struct LayoutNode* children_next;
+    struct LayoutNode* children_root;
 } Node;
 
 //! The layout tree

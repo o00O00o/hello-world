@@ -39,7 +39,7 @@ int DFS(Node* root, SearchType search, void* ptr, Position* ret) {
             break;
     }
 
-    Node* curr = root->childern_root;
+    Node* curr = root->children_root;
     while(curr != NULL) {
         int result = DFS(curr, search, ptr, ret);
         
@@ -79,8 +79,8 @@ void layout_node_init(Node* node, const char* name, int id, Position position) {
     node->pos = position;
 
     node->sibling_next = NULL;
-    node->childern_next = NULL;
-    node->childern_root = NULL;
+    node->children_next = NULL;
+    node->children_root = NULL;
 }
 
 //! Add an initialized node as the root of the tree
@@ -91,15 +91,15 @@ void layout_init(Layout* layout, Node* root) {
 
 //! Add an intialized node as the child of another node already in the Layout tree
 void layout_add_child(Layout* layout, Node* parent, Node* child) {
-    if (parent->childern_root == NULL) {
-        //no childern
-        parent->childern_root = child;
-        parent->childern_next = child;
+    if (parent->children_root == NULL) {
+        //no children
+        parent->children_root = child;
+        parent->children_next = child;
     }
     else {
-        //with childern add to linkedlist
-        parent->childern_next->sibling_next = child;
-        parent->childern_next = child;
+        //with children add to linkedlist
+        parent->children_next->sibling_next = child;
+        parent->children_next = child;
     }
 
     return;
